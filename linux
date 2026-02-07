@@ -1,0 +1,701 @@
+### Linux Learning 
+
+## PHASE 1: Linux Fundamentals
+
+# 1. Linux File Structure and Navigation
+
+### Linux File System Hierarchy
+
+/
+|-- bin    → Essential command binaries  ==> /usr/bin     (symbolic link)
+|-- boot   → Boot loader files
+|-- dev    → Device files
+|-- etc    → Configuration files
+|-- home   → User home directories
+|   ├── user1  → Home directory for user1
+|   └── user2  → Home directory for user2
+|-- lib    → Shared libraries            ==> /usr/lib     (symbolic link)
+|-- lib64  → 64-bit shared libraries     ==> /usr/lib64   (symbolic link)
+|-- root   → Root user home directory
+|-- sbin   → System binaries             ==> /usr/sbin    (symbolic link)
+|-- tmp    → Temporary files
+|-- usr    → User programs and data
+│   ├── bin    → User command binaries
+│   ├── sbin   → User system binaries
+│   ├── lib    → Libraries
+│   └── share  → Architecture-independent data
+|-- var    → Variable data files
+│   ├── log    → System log files
+│   ├── spool  → Mail, print queues
+│   └── cache  → Application cache
+|-- proc   → Process information (virtual)
+|-- sys    → System files (virtual)
+
+
+## 2. Basic Linux Commands
+
+# General Command Format
+# command [options] [arguments]
+ls -l /etc
+
+### Explanation:
+#Part	Meaning
+ls	    command
+-l	    option (long format)
+/etc	argument (target)
+
+### pwd command to print working directory
+pwd
+
+### cd command to change directory
+cd /home/ubuntu/
+cd ~    # change to home directory
+cd -    # change to previous directory
+cd ..   # change to parent directory
+cd /    # change to root directory
+
+### ls command to list files and directories
+ls
+ls -l        # long listing format
+ls -a        # show all files including hidden files
+ls -lh       # long listing with human-readable file sizes
+ls -R        # recursive listing of directories
+ls -t        # sort by modification time
+ls -S        # sort by file sizes
+
+### whatis command to get brief description of a command
+whatis ls
+whatis pwd
+whatis [command_name]   # replace [command_name] with the desired command
+
+### man command used to full manual pages for any command
+man ls
+man pwd
+man [command_name]   # replace [command_name] with the desired command
+
+### help command to get help about commands
+cd --help
+ls --help
+pwd --help
+[command_name] --help   # replace [command_name] with the desired command
+
+### clear command to clear the terminal screen
+clear
+
+### alias command to create command shortcuts
+
+# temporary aliases (lasts for the session)
+alias ll='ls -l'          # create alias ll for ls -l
+alias la='ls -a'          # create alias la for ls -a
+unalias ll                # remove alias ll
+unalias la                # remove alias la
+
+# permanent aliases (add to ~/.bashrc or ~/.bash_aliases)  
+echo "alias ll='ls -l'" >> ~/.bashrc
+echo "alias la='ls -a'" >> ~/.bashrc
+source ~/.bashrc          # apply changes
+
+### echo command to display a line of text/string
+echo "Hello, World!"
+echo $HOME          # display the value of HOME environment variable
+echo $PATH          # display the value of PATH environment variable
+echo $USER          # display the current logged-in user
+
+### Directory Creation and Removal
+mkdir my_directory                  # create a directory named my_directory
+mkdir -p parent/child/grandchild    # create nested directories
+rm my_directory                     # remove a directory (only if empty)
+rm myfile.txt                       # remove a file
+rmdir my_directory                  # remove an empty directory
+rm -r parent_directory              # remove a directory and its contents recursively
+rm -f my_directory                  # force remove a directory without prompt
+
+### File Creation and Removal
+touch myfile.txt                        # create an empty file named myfile.txt
+rm myfile.txt                           # remove the file named myfile.txt
+
+touch file1.txt file2.txt file3.txt     # create multiple files
+rm file1.txt file2.txt file3.txt        # remove multiple files
+
+touch dir1/file1.txt dir2/file2.txt     # create files in specified directories
+rm dir1/file1.txt dir2/file2.txt        # remove files from specified directories
+
+# view the timestamp of files
+ls -l                                   # list files with detailed information including timestamps
+ls -lt                                  # list files sorted by modification time
+ls -lc                                  # list files sorted by change time
+ls -lu                                  # list files sorted by access time
+
+# Update timestamp of existing files
+touch existingfile.txt                  # update access and modification times of existingfile.txt
+
+# reference file to copy timestamp from
+touch -r file1.txt file2.txt            # Set file2.txt's timestamp to match file1.txt's timestamp
+
+# set specific timestamp
+touch -t 202401011200.00 myfile.txt        # set myfile.txt's timestamp to January 1, 2024, 12:00:00
+touch -d "2024-01-01 12:00:00" myfile.txt  # set myfile.txt's timestamp using a date string
+
+### Viewing File Contents
+cat myfile.txt                          # display the contents of myfile.txt
+cat < myfile1.txt > myfile2.txt         # copy contents of myfile1.txt to myfile2.txt
+
+### File Descriptors
+# Standard File Descriptors:
+0: stdin (standard input)
+1: stdout (standard output)
+2: stderr (standard error)
+
+# stdout (Standard Out)
+echo Hello World                # output to stdout (terminal)
+echo Hello World > file.txt     # redirect stdout to file.txt
+echo Hello World >> file.txt    # append stdout to file.txt
+
+# stdin (Standard In)
+cat < file.txt                  # read input from file.txt
+cat < myfile.txt > output.txt   # read from myfile.txt and write to output.txt
+
+# stderr (Standard Error)
+ls /fake/directory > output.txt                 # will display error message on stderr because directory doesn't exist
+ls /fake/directory 2> error.txt                 # redirect stderr to error.txt
+ls /fake/directory 1> output.txt                # redirect stdout to output.txt
+ls /fake/directory 1> output.txt 2> error.txt   # redirect stdout to output.txt and stderr to error.txt
+ls /fake/directory > result.txt 2>&1            # redirect both stdout and stderr to result.txt
+ls /fake/directory /etc/passwd &> result.txt   # redirect both stdout and stderr to result.txt
+# the difference between 2>&1 and &> is that &> is a shorthand for redirecting both stdout and stderr to the same file
+
+
+# head and tail commands to view the beginning and end of files
+head myfile.txt                         # display the first 10 lines of myfile.txt
+head -n 5 myfile.txt                    # display the first 5 lines of myfile.txt
+tail myfile.txt                         # display the last 10 lines of myfile.txt
+tail -n 5 myfile.txt                    # display the last 5 lines of myfile.txt
+
+### Copying and Moving Files
+cp source.txt destination.txt           # copy source.txt to destination.txt
+cp file1.txt file2.txt backup/          # copy multiple files to a directory
+
+cp *.jpg /home/ubuntu/Pictures/           # copy all .jpg files to /home/ubuntu/Pictures/ directory
+
+cp -i source.txt destination.txt         # interactive copy, prompts before overwrite
+cp -u source.txt destination.txt         # copy only if source is newer than destination or destination doesn't exist
+
+cp -r dir1/ dir2/                       # copy directory dir1 to dir2
+cp -r dir1/ dir2/ backup/               # copy directory dir1 and dir2 to backup/ directory
+
+mv oldname.txt newname.txt              # rename a file
+mv source.txt my_files/                 # move source.txt to my_files/ directory
+mv file1.txt file2.txt archive/         # move multiple files to a directory
+mv -t destination/ file1.txt file2.txt  # move files to destination directory using -t option
+
+### Finding Files
+find /home/user/ -name "myfile.txt"         # find myfile.txt in /home/user/ directory
+find /var/log/ -type f -name "*.log"        # find all .log files in /var/log/ directory and f stands for file
+find /etc/ -type d -name "conf.d"           # find all directories named conf.d in /etc/ directory and d stands for directory
+
+### Redirection, Pipes and tee Command
+# Output Redirection
+echo "Hello, World!" > hello.txt            # redirect output to hello.txt (overwrite)
+echo "Hello again!" >> hello.txt            # append output to hello.txt
+cat hello.txt                               # display contents of hello.txt
+
+# Input Redirection
+cat < hello.txt                             # read input from hello.txt
+
+# Pipes
+ls -l | grep "myfile.txt"                   # list files and filter for myfile.txt
+ls -la /etc | less                          # list /etc directory contents and view with less
+ps aux | grep "python"                      # list processes and filter for python
+
+# Combining Redirection and Pipes
+ps aux | grep "python" > python_processes.txt    # save filtered processes to a file
+cat python_processes.txt                         # display contents of python_processes.txt
+
+# tee Command
+echo "Logging this message" | tee log.txt       # write message to log.txt and display on terminal
+cat log.txt                                     # display contents of log.txt
+
+# wc Command
+wc -l myfile.txt                               # count number of lines in myfile.txt
+wc -w myfile.txt                               # count number of words in myfile.txt
+wc -c myfile.txt                               # count number of bytes in myfile.txt
+wc myfile.txt                                  # display lines, words, and bytes in myfile.txt
+
+# grep Command
+grep "search_term" myfile.txt                  # search for "search_term" in myfile.txt
+grep -i "search_term" myfile.txt               # case-insensitive search
+grep -w "search_term" myfile.txt               # match whole words only
+grep -c "search_term" myfile.txt               # count occurrences of "search_term"
+grep -r "search_term" /path/to/directory/      # recursive search in a directory
+grep -n "search_term" myfile.txt               # display line numbers with matches
+grep -v "search_term" myfile.txt               # display lines that do not match the search term
+
+# sort Command
+sort myfile.txt                               # sort lines in myfile.txt alphabetically
+sort -r myfile.txt                            # sort lines in reverse order
+sort -n numbers.txt                           # sort lines in numbers.txt numerically
+sort -k 2 myfile.txt                          # sort by the 2nd column in myfile.txt
+
+ls -l | sort -k 5 -n                        # sort files by size (5th column) numerically
+ls -l | sort -k 5 -rn                       # sort files by size (5th column) in reverse numerical order
+ls -l | sort -k 6,7                         # sort files by date (6th and 7th columns)
+
+# cut command
+cut -c 5 myfile.txt                          # extract the 5th character from each line of myfile.txt
+cut -c 5-10 myfile.txt                       # extract characters from position 5 to 10
+cut -f 1 -d ";" myfile.csv                   # extract 1st field from a CSV file (semicolon as delimiter)
+cut -f 1,3 -d ',' myfile.csv                 # extract 1st and 3rd fields from a CSV file (comma as delimiter)
+
+# uniq Command
+sort myfile.txt | uniq                       # remove duplicate lines from myfile.txt
+sort myfile.txt | uniq -c                    # count occurrences of each line
+sort myfile.txt | uniq -d                    # display only duplicate lines
+sort myfile.txt | uniq -u                    # display only unique lines
+
+# diff Command
+diff file1.txt file2.txt                     # compare file1.txt and file2.txt
+diff -u file1.txt file2.txt                  # unified format comparison
+diff -c file1.txt file2.txt                  # context format comparison
+diff file1.txt file2.txt > diff_output.txt   # save differences to diff_output.txt
+
+# tar Command
+tar -cvf archive.tar /path/to/directory/     # create a tar archive of a directory
+tar -xvf archive.tar                         # extract a tar archive
+tar -czvf archive.tar.gz /path/to/directory/ # create a compressed tar.gz archive
+tar -xzvf archive.tar.gz                     # extract a compressed tar.gz archive
+
+# zip and unzip Commands
+zip archive.zip file1.txt file2.txt          # create a zip archive containing file1.txt and file2.txt
+unzip archive.zip                            # extract a zip archive
+
+# ssh Command
+ssh user@remote_host                          # connect to remote host via SSH
+ssh -i /path/to/private_key user@remote_host  # connect using a specific SSH key
+ssh -p 2222 user@remote_host                  # connect to remote host on a specific port (2222)
+
+# scp Command
+scp file.txt user@remote_host:/path/to/destination/              # copy file.txt to remote host
+scp user@remote_host:/path/to/source/file.txt ./                 # copy file.txt from remote host to local machine
+scp -r /local/directory/ user@remote_host:/path/to/destination/  # copy a directory to remote host
+scp -r user@remote_host:/path/to/source/directory/ ./            # copy a directory from remote host to local machine
+scp -i /path/to/private_key file.txt user@remote_host:/path/to/destination/  # copy file using a specific SSH key
+
+# rsync Command
+rsync -av /source/directory/ /destination/directory/                   # synchronize directories locally
+rsync -avz /source/directory/ user@remote_host:/path/to/destination/   # synchronize directory to remote host with compression
+rsync -avz user@remote_host:/path/to/source/ /destination/directory/   # synchronize directory from remote host with compression
+
+# uptime, date, cal and history Commands
+uptime                                   # display system uptime and load averages
+date                                     # display current date and time
+cal                                      # display current months calendar
+cal 2024                                 # display calendar for the year 2024
+history                                  # display command history
+history | grep "search_term"             # search command history for "search_term"
+
+
+# PHASE 2: USERS, GROUPS & FILE PERMISSIONS
+
+# Types of Users
+| Type   | Description              |
+| ------ | ------------------------ |
+| root   | Superuser (UID 0)        |
+| system | Services (UID < 1000)    |
+| normal | Human users (UID ≥ 1000) |
+
+# Group Concept
+Every user has:
+    Primary group
+    Secondary groups
+
+## 1. User and Group Management
+
+### User Management Commands
+# Viewing User Information
+whoami                     # display the current logged-in user
+id                         # display user ID, group ID, and group memberships
+cat /etc/passwd            # view user account information
+cat /etc/group             # view group information
+
+# Adding Users 
+sudo adduser newuser               # add a new user named newuser and its automatically creates home directory
+sudo useradd newuser               # alternative command to add a new user
+sudo passwd newuser                # set password for the new user
+sudo useradd -m newuser            # add a new user and create home directory
+
+#Important Options
+Option	Meaning
+-m	    create home directory
+-s	    login shell
+-g	    primary group
+-G	    secondary groups
+
+sudo adduser -s /bin/bash newuser          # add a new user with bash as the login shell
+sudo adduser -g developers newuser         # add a new user with developers as the primary group
+sudo adduser -G sudo,newgroup newuser      # add a new user with sudo and newgroup as secondary groups
+
+## Modifying Users
+sudo usermod -l newusername oldusername        # change username from oldusername to newusername
+sudo usermod -d /new/home/dir newusername      # change home directory for newusername
+sudo usermod -s /bin/zsh newusername           # change login shell for newusername
+sudo usermod -aG groupname newusername         # add newusername to groupname as a secondary group
+
+## id command to verify changes
+id newusername                     # display user ID, group ID, and group memberships for newusername
+
+## Deleting Users
+sudo deluser newusername                   # delete user named newusername
+sudo userdel newusername                   # alternative command to delete a user
+sudo userdel -r newusername                # delete user and remove home directory
+
+
+### Group Management Commands
+# Adding Groups
+sudo addgroup newgroup               # add a new group named newgroup 
+sudo groupadd newgroup               # alternative command to add a new group
+
+# Modifying Groups
+sudo groupmod -n newgroupname oldgroupname    # change group name from oldgroupname to newgroupname
+
+# Deleting Groups
+sudo delgroup newgroup               # delete group named newgroup
+sudo groupdel newgroup               # alternative command to delete a group
+
+## 2. File Permissions  
+### Understanding File Permissions
+r = read (4)
+w = write (2)
+x = execute (1)
+
+### Viewing File Permissions
+ls -l filename.txt
+# Example Output:
+-rwxr-xr-- 1 user group 1234 Jan 01 12:00 filename.txt
+# Breakdown:
+# -             : file type ( - for file, d for directory, l for link)
+# rwx           : owner permissions (read, write, execute)   
+# r-x           : group permissions (read, execute)
+# r--           : others permissions (read only)
+# 1             : number of hard links
+# user          : owner of the file
+# group         : group of the file
+# 1234          : file size in bytes
+# Jan 01 12:00  : last modified date and time
+# filename.txt  : name of the file
+
+### Changing File Permissions
+# Using Symbolic Mode
+chmod u+x filename.txt              # add execute permission for owner
+chmod g-w filename.txt              # remove write permission for group
+chmod o=r filename.txt              # set read-only permission for others
+chmod u=rwx,g=rx,o=r filename.txt   # set specific permissions for owner, group, and others
+
+# Using Numeric Mode
+chmod 755 filename.txt              # set rwx for owner, rx for group, r for others
+chmod 644 filename.txt              # set rw for owner, r for group and others
+chmod 700 filename.txt              # set rwx for owner, no permissions for group and others
+
+### Changing File Ownership
+sudo chown newowner filename.txt                # change owner of the file to newowner
+sudo chown newowner:newgroup filename.txt       # change owner to newowner and group to newgroup
+
+sudo chown -R newowner:newgroup directory/      # change owner and group recursively for a directory
+
+### Changing File Group
+sudo chgrp newgroup filename.txt                # change group of the file to newgroup
+sudo chgrp -R newgroup directory/               # change group recursively for a directory
+
+### Special Permissions
+# its used to provide special access rights to files and directories.
+# Setuid (s in owner execute position)
+chmod u+s filename.txt              # set setuid permission
+# Setgid (s in group execute position)
+chmod g+s directory/                # set setgid permission on a directory
+# Sticky Bit (t in others execute position)
+chmod o+t directory/                # set sticky bit on a directory
+
+
+# PHASE 3: PACKAGE & PROCESS MANAGEMENT
+
+## 1. Package Management with APT (Debian/Ubuntu)
+### Updating Package Lists
+sudo apt update
+
+### Upgrading Installed Packages
+sudo apt upgrade
+
+### Installing New Packages
+sudo apt install package_name        # replace package_name with the desired package
+sudo apt install git                 # example to install git
+
+### Removing Packages
+sudo apt remove package_name         # replace package_name with the desired package
+sudo apt remove git                  # example to remove git
+
+### Searching for Packages
+apt search package_name              # replace package_name with the desired package
+apt search git                       # example to search for git
+
+### Viewing Package Information
+apt show package_name                # replace package_name with the desired package
+apt show git                         # example to view information about git
+
+
+
+## 2. Process Management
+### Viewing Running Processes
+ps aux                             # display all running processes with detailed information
+top                                # interactive process viewer
+htop                               # enhanced interactive process viewer (may need to install)
+
+### Managing Processes
+kill PID                           # terminate process with specified PID
+kill -9 PID                        # forcefully terminate process with specified PID
+pkill process_name                 # terminate processes by name
+killall process_name               # terminate all processes with the specified name
+
+## Viewing System Resource Usage
+free -h                            # display memory usage in human-readable format
+df -h                              # display disk space usage in human-readable format
+du -sh directory/                  # display the size of a directory in human-readable format
+vmstat                             # display system performance statistics
+iostat                             # display CPU and I/O statistics
+ss -tulnp                          # display listening ports and associated processes
+
+# using options for customeized output
+top -o %CPU                        # sort processes by CPU usage
+top -o %MEM                        # sort processes by memory usage
+top | grep process_name            # filter top output for a specific process
+du -b | sort -rh | head -n 10      # display top 10 largest files/directories in bytes
+# here -b stands for bytes, sort -rh sorts the output in human-readable format in descending order
+
+ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head -n 10   # display top 10 memory-consuming processes
+# here e or A stands for every process, o stands for output format, --sort is used to sort the output based on specified column
+# here "minus" before mem, -%mem sorts by memory usage in descending order, without minus it would be ascending order
+# here "pipeline symbol", | is used to pass the output of one command as input to another command
+ps -Ao pid,ppid,cmd,%mem,%cpu --sort=-%cpu | head -n 10   # display top 10 CPU-consuming processes
+
+
+
+## 3. Service Management with systemd
+
+### Managing Services
+sudo systemctl start service_name          # start a service
+sudo systemctl stop service_name           # stop a service
+sudo systemctl restart service_name        # restart a service
+sudo systemctl status service_name         # check the status of a service
+sudo systemctl enable service_name         # enable a service to start on boot
+sudo systemctl disable service_name        # disable a service from starting on boot
+
+
+## 4. JOB CONTROL
+### Running Processes in Background
+command &                           # run command in the background
+sleep 60 &                          # example to run sleep command in the background
+
+### Foreground / Background
+jobs                                # list background jobs
+fg %1                               # bring job number 1 to the foreground
+bg %1                               # resume job number 1 in the background
+
+
+
+# PHASE 4: NETWORKING 
+## 1. Networking Basics
+
+### Check IP Address
+ip addr show        # detailed view of all network interfaces
+ip a                # shorthand for ip addr show
+ifconfig            # may need to install net-tools package
+
+### Network Interfaces
+ip link show            # display all network interfaces
+ip link set eth0 up     # bring up the eth0 interface
+ip link set eth0 down   # bring down the eth0 interface
+
+### Routing Table
+ip route show               # display the routing table
+ip route add default via    # replace <gateway_ip> with the gateway IP address
+ip route del default via    # replace <gateway_ip> with the gateway IP address
+
+## 2. Connectivity Testing
+
+### ping command to test connectivity to a host
+ping google.com               # ping google.com indefinitely
+ping -c 4 google.com          # ping google.com 4 times
+
+### curl – API & Web Testing
+curl http://example.com            # fetch the content of example.com
+curl -I http://example.com         # fetch only the headers of example.com
+curl -X POST http://example.com    # send a POST request to example.com
+
+### wget – Download Files from Web
+wget http://example.com/file.txt                        # download file.txt from example.com
+wget -O custom_name.txt http://example.com/file.txt     # download and save as custom_name.txt
+
+### traceroute – Trace Network Path
+traceroute google.com            # trace the route to google.com
+traceroute -m 20 google.com      # trace the route with a maximum of 20 hops
+
+### nslookup – DNS Lookup
+nslookup example.com             # perform DNS lookup for example.com
+nslookup -type=MX example.com    # perform MX record lookup for example.com
+
+## 3. Ports and Sockets
+### netstat – Network Statistics
+netstat -tuln               # display listening TCP and UDP ports
+netstat -an                 # display all active connections and listening ports
+ss -tuln                    # display listening TCP and UDP ports (modern alternative to netstat)
+ss -an                      # display all active connections and listening ports (modern alternative to netstat)
+
+# Explanation of Flags:
+| Flag | Meaning   |
+| ---- | --------- |
+| `t`  | TCP       |
+| `u`  | UDP       |
+| `l`  | listening |
+| `n`  | numeric   |
+| `p`  | process   |
+
+### lsof – List Open Files
+lsof -i                     # list all network connections
+lsof -i :80                 # list processes using port 80
+lsof -u username            # list files opened by a specific user
+
+## 4. Firewall (UFW – Ubuntu)
+### Check Firewall Status
+sudo ufw status              # check UFW status
+
+### Enable / Disable Firewall
+sudo ufw enable              # enable UFW firewall
+sudo ufw disable             # disable UFW firewall
+
+### Allow / Deny Traffic
+sudo ufw allow 80            # allow HTTP traffic on port 80
+sudo ufw allow 22            # allow SSH traffic on port 22
+sudo ufw deny 3306           # deny MySQL traffic on port 3306
+
+### Reset Firewall
+sudo ufw reset               # reset UFW to default settings
+
+
+# PHASE 5: ADVANCED LINUX
+
+## 1. Bash and shell scripting
+
+### Shell Types
+echo $SHELL
+
+# Common Shells:
+| Shell       | Description                |
+| ----------- | -------------------------- |
+| bash        | Bourne Again Shell         |
+| sh          | Bourne Shell               |
+| zsh         | Z Shell                    |
+| csh         | C Shell                    |
+| ksh         | Korn Shell                 |
+
+### Creating a Simple Bash Script
+#!/bin/bash
+# This is a simple bash script
+echo "Hello, World!"
+
+
+## 2. job Scheduling with cron
+
+### Viewing Cron Jobs
+crontab -l                             # list cron jobs for the current user
+sudo crontab -l                        # list cron jobs for the root user
+
+### Editing Cron Jobs
+crontab -e                             # edit cron jobs for the current user
+sudo crontab -e                        # edit cron jobs for the root user
+
+### Cron Job Format
+# ┌───────────── minute (0 - 59)
+# │ ┌───────────── hour (0 - 23)
+# │ │ ┌───────────── day of the month (1 - 31)  
+# │ │ │ ┌───────────── month (1 - 12)
+# │ │ │ │ ┌───────────── day of the week (0 - 6 Sunday to Saturday; 7 is also Sunday on some systems)
+# │ │ │ │ │                                       
+# │ │ │ │ │
+# * * * * * command to be executed
+### Example Cron Job
+# 0 2 * * * /usr/bin/backup.sh            # run backup.sh every day at 2:00 AM
+# 30 1 * * 1 /usr/bin/cleanup.sh          # run cleanup.sh every Monday at 1:30 AM
+# */15 * * * * /usr/bin/check_updates.sh  # run check_updates.sh every 15 minutes
+
+# create a job that runs a script located at /home/user/backup.sh every day at 3:30 AM
+30 3 * * * /home/user/backup.sh
+
+### batch Command
+echo "/home/user/long_running_task.sh" | batch    # schedule a long-running task to run when system load is low
+
+### sleep Command
+sleep 10                    # pause execution for 10 seconds
+sleep 5m                    # pause execution for 5 minutes
+sleep 1h                    # pause execution for 1 hour
+
+### at Command
+echo "/home/user/one_time_task.sh" | at 14:30    # schedule a one-time task to run at 2:30 PM today
+echo "/home/user/one_time_task.sh" | at 09:00 tomorrow  # schedule a one-time task to run at 9:00 AM tomorrow
+
+## 4. Logs
+
+### logs Location
+/var/log/
+
+### View System Logs
+sudo cat /var/log/syslog                # view system log (Debian/Ubuntu)
+sudo cat /var/log/auth.log              # view authentication log (Debian/Ubuntu)
+sudo cat /var/log/messages              # view system log (RedHat/CentOS)
+sudo cat /var/log/secure                # view authentication log (RedHat/CentOS)
+
+
+### Viewing Service Logs with journalctl
+sudo journalctl -xe                     # view system logs with extra details
+sudo journalctl -u service_name         # view logs for a specific service
+sudo journalctl -u nginx.service        # view logs for nginx service
+journalctl -u nginx -f                  # follow nginx service logs in real-time
+
+
+## 5. Performance tuning
+### Monitoring System Performance
+top                                    # interactive process viewer
+htop                                   # enhanced interactive process viewer (may need to install)
+vmstat                                 # display system performance statistics
+iostat                                 # display CPU and I/O statistics
+free -h                                # display memory usage in human-readable format
+df -h                                  # display disk space usage in human-readable format
+dstat                                  # versatile resource statistics (may need to install)
+
+### Analyzing Performance Bottlenecks
+iotop                                  # display real-time disk I/O usage (may need to install)
+strace                                 # trace system calls and signals (may need to install)
+perf                                   # performance analysis tool (may need to install)
+
+### Tuning System Parameters
+sudo sysctl -a                         # display all kernel parameters
+sudo sysctl -w net.ipv4.ip_forward=1   # enable IP forwarding
+sudo sysctl -w vm.swappiness=10        # set swappiness value to 10
+sudo sysctl -p                         # apply changes made to /etc/sysctl.conf
+
+### Note:
+# Always back up configuration files before making changes.
+
+# PHASE 6: LINUX SECURITY
+## 1. Basic Security Practices
+### Regular Updates
+sudo apt update && sudo apt upgrade -y
+
+### Strong Passwords
+sudo apt install libpam-cracklib
+sudo nano /etc/pam.d/common-password
+# Add the following line to enforce strong passwords:
+password requisite pam_cracklib.so retry=3 minlen=8 difok=3
+
+### SSH Security
+sudo nano /etc/ssh/sshd_config
+# Recommended settings:  (if it's sets to yes, change it to no but using this will disable root login via SSH)
+PermitRootLogin no
+PasswordAuthentication no
