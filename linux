@@ -100,10 +100,19 @@ echo "Hello, World!"
 echo $HOME          # display the value of HOME environment variable
 echo $PATH          # display the value of PATH environment variable
 echo $USER          # display the current logged-in user
+echo -e "$(whoami)\n$(hostname)\n$(date)" > info.txt 
+
+## Explanation of the above command:
+-e              : enable interpretation of backslash escapes(enable newline escape)
+$(whoami)       : command substitution to get the current username
+$(hostname)     : command substitution to get the hostname of the system
+$(date)         : command substitution to get the current date and time
+> info.txt      : redirect the output to a file named info.txt
+
 
 ### Directory Creation and Removal
 mkdir my_directory                  # create a directory named my_directory
-mkdir -p parent/child/grandchild    # create nested directories
+mkdir -p parent/child/grandchild    # create nested directories(-p creates parent directories as needed)
 rm my_directory                     # remove a directory (only if empty)
 rm myfile.txt                       # remove a file
 rmdir my_directory                  # remove an empty directory
@@ -168,8 +177,34 @@ ls /fake/directory /etc/passwd &> result.txt   # redirect both stdout and stderr
 # head and tail commands to view the beginning and end of files
 head myfile.txt                         # display the first 10 lines of myfile.txt
 head -n 5 myfile.txt                    # display the first 5 lines of myfile.txt
+head -c 20 myfile.txt                   # display the first 20 characters of myfile.txt
+
 tail myfile.txt                         # display the last 10 lines of myfile.txt
 tail -n 5 myfile.txt                    # display the last 5 lines of myfile.txt
+
+# less command to view files with pagination
+less myfile.txt                         # view myfile.txt with pagination
+less +G myfile.txt                      # start less at the end of the file
+less -N myfile.txt                      # show line numbers in less
+less -x myfile.txt                      # keeps text on screen after quitting
+
+# key navigation in less:
+# Space or f: move forward one page
+# b: move backward one page
+# Enter: move forward one line
+# y: move backward one line
+# g/G : move to the beginning/end of the file
+# n/N : search forward/backward for a term in the file
+# q: quit less
+# /search_term: search for a term in the file    
+
+# tr Command
+tr 'a-z' 'A-Z' < myfile.txt > uppercase.txt   # convert lowercase to uppercase and save to uppercase.txt
+tr -d 'a-z' < myfile.txt > no_lowercase.txt   # delete lowercase letters from myfile.txt and save to no_lowercase.txt
+tr -d 'aeiou' < myfile.txt > no_vowels.txt    # delete the vowels from myfile.txt and save to no_vowels.txt
+tr '()' '[]' < myfile.txt > brackets.txt      # replace parentheses with square brackets and save to brackets.txt
+tr -s ' ' < myfile.txt > single_space.txt     # replace multiple spaces with a single space and save to single_space.txt
+
 
 ### Copying and Moving Files
 cp source.txt destination.txt           # copy source.txt to destination.txt
@@ -229,12 +264,22 @@ grep -c "search_term" myfile.txt               # count occurrences of "search_te
 grep -r "search_term" /path/to/directory/      # recursive search in a directory
 grep -n "search_term" myfile.txt               # display line numbers with matches
 grep -v "search_term" myfile.txt               # display lines that do not match the search term
+grep -f patterns.txt myfile.txt                # search for multiple patterns from a file
+grep -c -F -f patterns.txt myfile.txt          # count occurrences of fixed strings from a file
+
+# awk Command
+awk '{print $1}' myfile.txt                    # print the first column of myfile.txt
+awk '{print $1, $3}' myfile.txt                # print the first and third columns of myfile.txt
+awk '{print $1..$3}' myfile.txt                # print columns from 1 to 3 of myfile.txt
+awk -F "," '{print $1}' myfile.csv             # print the first column of a CSV file (comma as delimiter)
+awk -F ";" '{print $2}' myfile.csv             # print the second column of a CSV file (semicolon as delimiter)
 
 # sort Command
 sort myfile.txt                               # sort lines in myfile.txt alphabetically
 sort -r myfile.txt                            # sort lines in reverse order
 sort -n numbers.txt                           # sort lines in numbers.txt numerically
 sort -k 2 myfile.txt                          # sort by the 2nd column in myfile.txt
+sort -k2,2nr myfile.txt                       # sort by the 2nd column in reverse numerical order
 
 ls -l | sort -k 5 -n                        # sort files by size (5th column) numerically
 ls -l | sort -k 5 -rn                       # sort files by size (5th column) in reverse numerical order
@@ -244,7 +289,8 @@ ls -l | sort -k 6,7                         # sort files by date (6th and 7th co
 cut -c 5 myfile.txt                          # extract the 5th character from each line of myfile.txt
 cut -c 5-10 myfile.txt                       # extract characters from position 5 to 10
 cut -f 1 -d ";" myfile.csv                   # extract 1st field from a CSV file (semicolon as delimiter)
-cut -f 1,3 -d ',' myfile.csv                 # extract 1st and 3rd fields from a CSV file (comma as delimiter)
+cut -f 1,3 -d ',' myfile.csv                 # extract 1st and 3rd fields from a CSV file (comma as delimiter)  
+cut -d' ' -f4                                # extract the 4th field from a space-delimited file
 
 # uniq Command
 sort myfile.txt | uniq                       # remove duplicate lines from myfile.txt
@@ -497,7 +543,6 @@ sleep 60 &                          # example to run sleep command in the backgr
 jobs                                # list background jobs
 fg %1                               # bring job number 1 to the foreground
 bg %1                               # resume job number 1 in the background
-
 
 
 # PHASE 4: NETWORKING 
