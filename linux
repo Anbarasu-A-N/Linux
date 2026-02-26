@@ -491,6 +491,10 @@ apt show git                         # example to view information about git
 ## 2. Process Management
 ### Viewing Running Processes
 ps aux                             # display all running processes with detailed information
+ps -eo  pid,ppid,%cpu --sort=%cpu  # To to custom output
+ps -eo pid,etime                   # the process time(start, wait, sleep, end)
+ps -eo pid,etimes                  # the process time like etime but in seconds
+ps -eo pid,time                    # cpu time only
 top                                # interactive process viewer
 htop                               # enhanced interactive process viewer (may need to install)
 
