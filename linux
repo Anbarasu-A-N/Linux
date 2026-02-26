@@ -507,7 +507,8 @@ killall process_name               # terminate all processes with the specified 
 ## Viewing System Resource Usage
 free -h                            # display memory usage in human-readable format
 df -h                              # display disk space usage in human-readable format
-du -sh directory/                  # display the size of a directory in human-readable format
+du -sh directory/                  # display the size of a directory the summarize in human-readable format
+du -ah directory/                  # display the all the entries of the directory in human-readable format
 vmstat                             # display system performance statistics
 iostat                             # display CPU and I/O statistics
 ss -tulnp                          # display listening ports and associated processes
